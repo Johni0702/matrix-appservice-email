@@ -75,10 +75,10 @@ public class MatrixApplicationService implements _MatrixApplicationService {
 
     private Pattern cmdOptsParser = Pattern.compile("([^\"]\\S*|\".+?\")\\s*");
 
-    private Map<String, List<_MatrixID>> memberships = new HashMap<>();
+    private Map<String, List<_MatrixUser>> memberships = new HashMap<>();
     private String lastTransactionId;
 
-    private synchronized List<_MatrixID> getJoinedUsers(String roomId) {
+    private synchronized List<_MatrixUser> getJoinedUsers(String roomId) {
         return memberships.computeIfAbsent(roomId, s -> mgr.getClient().getRoom(s).getJoinedUsers());
     }
 
@@ -191,9 +191,11 @@ public class MatrixApplicationService implements _MatrixApplicationService {
         } else {
             log.debug("Computing forward list");
             log.debug("Listing users in the room {}", ev.getRoomId());
-            List<_MatrixID> users = getJoinedUsers(ev.getRoomId());
-            for (_MatrixID user : users) {
-                if (!mgr.isOurUser(user)) {
+            List<_MatrixUser> users = getJoinedUsers(ev.getRoomId());
+            _MatrixUser sender = users.stream().filter(it -> it.getId().equals(ev.getSender())).findAny()
+                    .orElseGet(() -> mgr.getClient().getUser(ev.getSender()));
+            for (_MatrixUser user : users) {
+                if (!mgr.isOurUser(user.getId())) {
                     log.debug("{} is not a bridged user, skipping", user);
                     continue;
                 }
@@ -204,15 +206,15 @@ public class MatrixApplicationService implements _MatrixApplicationService {
                 }
 
                 log.debug("{} is a valid potential bridge user", user);
-                Optional<_MatrixBridgeUser> userOpt = mgr.findClientForUser(user);
+                Optional<_MatrixBridgeUser> userOpt = mgr.findClientForUser(user.getId());
                 if (!userOpt.isPresent()) {
                     log.warn("No Matrix client for MXID {} while present in the room", user);
                     continue;
                 }
 
-                MatrixEndPoint ep = mgr.getEndpoint(user.getId(), ev.getRoomId());
+                MatrixEndPoint ep = mgr.getEndpoint(user.getId().getId(), ev.getRoomId());
                 log.info("Injecting message {} from room {} to {}", ev.getId(), ev.getRoomId(), user);
-                ep.inject(new MatrixBridgeMessage(ev.getId(), ev.getTime(), mgr.getClient().getUser(ev.getSender()), ev.getBody()));
+                ep.inject(new MatrixBridgeMessage(ev.getId(), ev.getTime(), sender, ev.getBody()));
             }
         }
     }

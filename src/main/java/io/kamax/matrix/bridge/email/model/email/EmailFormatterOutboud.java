@@ -274,7 +274,9 @@ public class EmailFormatterOutboud implements InitializingBean, _EmailFormatterO
         }
 
         _MatrixClient mxClient = ev.getSubscription().getMatrixEndpoint().getClient();
-        _MatrixUser userSource = mxClient.getUser(new MatrixID(ev.getInitiator()));
+        _MatrixUser userSource = mxClient.getRoom(ev.getSubscription().getMatrixEndpoint().getChannelId()).getJoinedUsers()
+                .stream().filter(it -> it.getId().getId().equals(ev.getInitiator())).findAny()
+                .orElseGet(() -> mxClient.getUser(new MatrixID(ev.getInitiator())));
         Optional<_MatrixContent> userAvatar = userSource.getAvatar();
         LocalDateTime ldt = LocalDateTime.ofInstant(ev.getTime(), ZoneOffset.systemDefault());
         TokenData tokenData = new TokenData(ev.getSubscription().getEmailEndpoint().getChannelId());
