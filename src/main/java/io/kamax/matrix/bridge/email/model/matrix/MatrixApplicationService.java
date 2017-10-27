@@ -303,7 +303,7 @@ public class MatrixApplicationService implements _MatrixApplicationService {
     }
 
     private void showHelp(_MatrixRoom room) {
-        room.sendNotice(bCmdCfg.getKeyword() + " mxisd <email>\t\tTranslate an e-mail into a Matrix ID");
+        room.sendNotice(bCmdCfg.getKeyword() + " mxid <email>\t\tTranslate an e-mail into a Matrix ID");
     }
 
     // TODO turn commands into objects to make this more efficient and extendible
