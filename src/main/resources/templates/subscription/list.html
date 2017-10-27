@@ -22,7 +22,7 @@
             <td th:text="${sub.getDate()}">Timestamp of the subscription creation</td>
             <td th:text="${sub.getCreator()}">Creator of the subscription</td>
             <td th:text="${sub.getName()}">Name of the Subscription</td>
-            <td><a th:href="@{'/subscription/remove?token=' + ${sub.getToken()}}">Unsubscribe</a></td>
+            <td><a th:href="@{'subscription/remove?token=' + ${sub.getToken()}}">Unsubscribe</a></td>
         </tr>
     </table>
 </div>
