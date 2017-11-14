@@ -67,9 +67,7 @@ public class GmailClientFormatter extends AEmailClientFormatter {
             return "";
         }
 
-        while (contentDiv.children().size() > 0 && contentDiv.children().last().is("br")) {
-            contentDiv.children().last().remove();
-        }
+        removeDanglingNewlines(contentDiv);
 
         return Jsoup.clean(contentDiv.html(), Whitelist.basic());
     }

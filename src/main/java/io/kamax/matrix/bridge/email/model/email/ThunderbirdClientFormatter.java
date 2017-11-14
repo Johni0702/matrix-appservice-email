@@ -59,9 +59,7 @@ public class ThunderbirdClientFormatter extends AEmailClientFormatter {
         body.select("blockquote[cite]").remove();
         body.select("div.moz-cite-prefix").remove();
 
-        while (body.children().size() > 0 && body.children().last().is("br")) {
-            body.children().last().remove();
-        }
+        removeDanglingNewlines(body);
 
         return Jsoup.clean(body.html(), Whitelist.basic());
     }

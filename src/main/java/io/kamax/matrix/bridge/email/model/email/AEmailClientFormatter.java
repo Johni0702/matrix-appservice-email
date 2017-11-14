@@ -25,6 +25,9 @@ import io.kamax.matrix.bridge.email.model.BridgeMessageTextContent;
 import io.kamax.matrix.bridge.email.model._BridgeMessageContent;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
+import org.jsoup.nodes.TextNode;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -74,6 +77,16 @@ public abstract class AEmailClientFormatter implements _EmailClientFormatter {
     }
 
     protected abstract String formatHtml(String content);
+
+    protected void removeDanglingNewlines(Element element) {
+        Node child;
+        while (element.childNodeSize() > 0
+                && (child = element.childNode(element.childNodeSize() - 1)) != null
+                && ((child instanceof Element && ((Element) child).is("br"))
+                || (child instanceof TextNode && ((TextNode) child).text().trim().isEmpty()))) {
+            child.remove();
+        }
+    }
 
     @Override
     public _BridgeMessageContent format(_BridgeMessageContent content) {
