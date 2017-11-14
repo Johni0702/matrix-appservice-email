@@ -37,10 +37,8 @@ public abstract class AEmailClientFormatter implements _EmailClientFormatter {
         // TODO do a proper algorithm
 
         try {
-            int maxLine = 0;
-
-
             List<String> linesIn = IOUtils.readLines(new StringReader(content));
+            int maxLine = linesIn.size();
             for (int i = 0; i < linesIn.size(); i++) {
                 if (linesIn.get(i).startsWith(">")) {
                     maxLine = i - (StringUtils.isBlank(linesIn.get(i - 1)) ? 2 : 1);
