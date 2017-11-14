@@ -200,7 +200,7 @@ public class MatrixApplicationService implements _MatrixApplicationService {
                     continue;
                 }
 
-                if (user.equals(ev.getSender())) {
+                if (user.getId().equals(ev.getSender())) {
                     log.debug("{} is the original sender of the event, skipping", user);
                     continue;
                 }
